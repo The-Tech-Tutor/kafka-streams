@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -25,17 +24,20 @@ public class SampleConsumer {
     //https://docs.spring.io/spring-kafka/docs/2.8.2/reference/html/#streams-spring
     @Bean
     public KStream<String, String> kStream(StreamsBuilder kStreamBuilder) {
-        KStream<String, String> stream = kStreamBuilder.stream(kafkaConfiguration.getInputTopic());
-        Duration windowSize = Duration.ofSeconds(5);
-        TimeWindows tumblingWindow = TimeWindows.of(windowSize);
+        KStream<String, String> stream = kStreamBuilder.stream(kafkaConfiguration.getInputTopic(), Consumed.with(Serdes.String(), Serdes.String()));
+        Duration windowSize = Duration.ofSeconds(10);
+        Duration gracePeriod = Duration.ofSeconds(5);
+        SessionWindows sessionWindow = SessionWindows.ofInactivityGapAndGrace(windowSize, gracePeriod);
 
-        stream.groupByKey()
-                .windowedBy(tumblingWindow)
-                .aggregate(ArrayList::new, (k, v, vr) -> {
-                    vr.add(v);
-                    return vr;
-                }, Materialized.with(Serdes.String(), CustomSerdes.MessageList()))
-        .toStream().to("output");
+        stream.groupByKey(Grouped.with(Serdes.String(), Serdes.String()))
+                .windowedBy(sessionWindow)
+                .aggregate(ArrayList::new,
+                        (key, value, aggregate1) -> { aggregate1.add(value); return aggregate1; },
+                        (key, aggregate1, aggregate2) -> { aggregate1.addAll(aggregate2); return aggregate1; },
+                        Materialized.with(Serdes.String(), CustomSerdes.MessageList()))
+                .toStream()
+                .map((key, value) -> new KeyValue<>(key.key(), value))
+                .to("output", Produced.with(Serdes.String(), CustomSerdes.MessageList()));
 
         return stream;
     }
