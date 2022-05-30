@@ -1,7 +1,6 @@
 package com.example.kafkastreams.config;
 
 import lombok.Data;
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,8 +10,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.kafka.support.converter.JsonMessageConverter;
-import org.springframework.kafka.support.converter.RecordMessageConverter;
 
 import java.util.HashMap;
 import java.util.Map;

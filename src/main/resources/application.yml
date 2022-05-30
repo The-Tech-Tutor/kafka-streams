@@ -1,3 +1,2 @@
 kafka:
-  inputGroup: group-1
   inputTopic: input
