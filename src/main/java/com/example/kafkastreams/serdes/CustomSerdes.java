@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public final class CustomSerdes {
 
+    //https://kafka.apache.org/31/documentation/streams/developer-guide/datatypes
     public static Serde<ArrayList> MessageList() {
         JsonSerializer<ArrayList> serializer = new JsonSerializer<>();
         JsonDeserializer<ArrayList> deserializer = new JsonDeserializer<>(ArrayList.class);

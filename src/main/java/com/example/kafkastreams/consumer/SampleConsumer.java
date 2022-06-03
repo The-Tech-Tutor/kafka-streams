@@ -42,7 +42,7 @@ public class SampleConsumer {
                         Materialized.with(Serdes.String(), CustomSerdes.MessageList()))
                 .toStream()
                 .map((key, value) -> new KeyValue<>(key.key(), value))
-                .to("output", Produced.with(Serdes.String(), CustomSerdes.MessageList()));
+                .to(kafkaConfiguration.getOutputTopic(), Produced.with(Serdes.String(), CustomSerdes.MessageList()));
 
         return stream;
     }

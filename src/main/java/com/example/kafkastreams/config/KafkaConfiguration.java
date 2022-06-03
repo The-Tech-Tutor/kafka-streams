@@ -34,4 +34,6 @@ public class KafkaConfiguration {
 
     private String inputTopic;
 
+    private String outputTopic;
+
 }
